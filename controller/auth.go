@@ -127,7 +127,7 @@ func Login(c *fiber.Ctx) error {
 
 	// Set token in cookies
 	c.Cookie(&fiber.Cookie{
-		Name:     "jwt",         // Nama cookie
+		Name:     "Auth",         // Nama cookie
 		Value:    t,             // Nilai cookie (JWT)
 		Expires:  time.Now().Add(24 * time.Hour), // Masa berlaku cookie
 		HTTPOnly: true,          // Akses hanya melalui HTTP (tidak dapat diakses oleh JS)

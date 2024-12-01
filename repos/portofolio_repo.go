@@ -55,3 +55,25 @@ func GetPortofolioByID(id string) (*model.Portofolio, error) {
 	}
 	return &portofolio, nil
 }
+
+func GetAllPortofolio() ([]model.Portofolio, error) {
+	collection := config.GetMongoClient().Database("ksi").Collection("portofolio")
+	cursor, err := collection.Find(context.Background(), bson.M{})
+	if err != nil {
+		log.Println("Error fetching portofolios:", err)
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	var portofolios []model.Portofolio
+	for cursor.Next(context.Background()) {
+		var portofolio model.Portofolio
+		err := cursor.Decode(&portofolio)
+		if err != nil {
+			log.Println("Error decoding portofolio:", err)
+			return nil, err
+		}
+		portofolios = append(portofolios, portofolio)
+	}
+	return portofolios, nil
+}

@@ -32,3 +32,22 @@ func CreatePortofolio(c *fiber.Ctx) error {
 		"portofolio_id": portofolioID,
 	})
 }
+
+func GetAllPortofolio(c *fiber.Ctx) error {
+	// Ambil token dari header
+	token := c.Get("Auth")
+	if token == "" {
+		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
+	}
+
+	// Ambil data portofolio dari database
+	portofolios, err := repos.GetAllPortofolio()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Error fetching portofolios")
+	}
+
+	// Return response sukses dengan data portofolio
+	return c.JSON(fiber.Map{
+		"portofolios": portofolios,
+	})
+}

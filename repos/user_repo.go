@@ -1,17 +1,18 @@
 package repos
 
 import (
-	"context"
-	"log"
-	"fmt"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"KSI-BE/config"
 	"KSI-BE/model"
+	"context"
+	"fmt"
+	"log"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func GetUserByUsername(username string) (*model.User, error) {
-	collection := config.GetMongoClient().Database("ksi").Collection("users")
+	collection := config.GetMongoClient().Database("KSI").Collection("users")
 	var user model.User
 	err := collection.FindOne(context.Background(), bson.M{"username": username}).Decode(&user)
 	if err != nil {
@@ -25,8 +26,8 @@ func GetUserByUsername(username string) (*model.User, error) {
 }
 
 func CreateUser(user *model.User) (string, error) {
-	// Akses koleksi 'users' dalam database
-	collection := config.GetMongoClient().Database("ksi").Collection("users")
+	// Akses koleKSI 'users' dalam database
+	collection := config.GetMongoClient().Database("KSI").Collection("users")
 
 	// Cek apakah username sudah ada
 	existingUser, err := GetUserByUsername(user.Username)
@@ -54,7 +55,7 @@ func CreateUser(user *model.User) (string, error) {
 }
 
 func GetUserByID(id string) (*model.User, error) {
-	collection := config.GetMongoClient().Database("ksi").Collection("users")
+	collection := config.GetMongoClient().Database("KSI").Collection("users")
 	var user model.User
 
 	err := collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&user)

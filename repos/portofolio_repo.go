@@ -1,13 +1,14 @@
 package repos
 
 import (
-	"context"
-	"log"
-	"fmt"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"KSI-BE/config"
 	"KSI-BE/model"
+	"context"
+	"fmt"
+	"log"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func CreatePortofolio(portofolio *model.Portofolio) (string, error) {
@@ -16,8 +17,8 @@ func CreatePortofolio(portofolio *model.Portofolio) (string, error) {
 		portofolio.GenerateID()
 	}
 
-	// Akses koleksi 'portofolio' dalam database
-	collection := config.GetMongoClient().Database("ksi").Collection("portofolio")
+	// Akses koleKSI 'portofolio' dalam database
+	collection := config.GetMongoClient().Database("KSI").Collection("portofolio")
 
 	// Cek apakah portofolio sudah ada
 	existingPortofolio, err := GetPortofolioByID(portofolio.ID)
@@ -42,7 +43,7 @@ func CreatePortofolio(portofolio *model.Portofolio) (string, error) {
 }
 
 func GetPortofolioByID(id string) (*model.Portofolio, error) {
-	collection := config.GetMongoClient().Database("ksi").Collection("portofolio")
+	collection := config.GetMongoClient().Database("KSI").Collection("portofolio")
 	var portofolio model.Portofolio
 
 	err := collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&portofolio)
@@ -57,7 +58,7 @@ func GetPortofolioByID(id string) (*model.Portofolio, error) {
 }
 
 func GetAllPortofolio() ([]model.Portofolio, error) {
-	collection := config.GetMongoClient().Database("ksi").Collection("portofolio")
+	collection := config.GetMongoClient().Database("KSI").Collection("portofolio")
 	cursor, err := collection.Find(context.Background(), bson.M{})
 	if err != nil {
 		log.Println("Error fetching portofolios:", err)

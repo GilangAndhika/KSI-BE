@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"log"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"KSI-BE/config"
 	"KSI-BE/model"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func CreateOrder(order *model.Orders) (string, error) {
@@ -17,8 +18,8 @@ func CreateOrder(order *model.Orders) (string, error) {
 		order.GenerateID()
 	}
 
-	// Akses koleksi 'orders' dalam database
-	collection := config.GetMongoClient().Database("ksi").Collection("orders")
+	// Akses koleKSI 'orders' dalam database
+	collection := config.GetMongoClient().Database("KSI").Collection("orders")
 
 	// Cek apakah order sudah ada
 	existingOrder, err := GetOrderByID(order.ID)
@@ -43,7 +44,7 @@ func CreateOrder(order *model.Orders) (string, error) {
 }
 
 func GetOrderByID(id string) (*model.Orders, error) {
-	collection := config.GetMongoClient().Database("ksi").Collection("orders")
+	collection := config.GetMongoClient().Database("KSI").Collection("orders")
 	var order model.Orders
 
 	err := collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&order)

@@ -1,11 +1,12 @@
 package controller
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"KSI-BE/repos"
 	"KSI-BE/model"
-	"go.mongodb.org/mongo-driver/mongo"
+	"KSI-BE/repos"
 	"time"
+
+	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func CreateOrder(c *fiber.Ctx) error {
@@ -37,9 +38,9 @@ func CreateOrder(c *fiber.Ctx) error {
 	}
 
 	// Isi data order dengan informasi dari user
-	input.GenerateID()              // Generate ID untuk order
-	input.FillUserDetails(user)     // Isi username, email, dan phone dari user
-	input.OrdersDate = time.Now()   // Set tanggal order dengan waktu saat ini
+	input.GenerateID()            // Generate ID untuk order
+	input.FillUserDetails(user)   // Isi username, email, dan phone dari user
+	input.OrdersDate = time.Now() // Set tanggal order dengan waktu saat ini
 
 	// Simpan order ke database
 	orderID, err := repos.CreateOrder(&input)

@@ -1,9 +1,10 @@
 package controller
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"KSI-BE/repos"
 	"KSI-BE/model"
+	"KSI-BE/repos"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func CreatePortofolio(c *fiber.Ctx) error {
@@ -28,7 +29,7 @@ func CreatePortofolio(c *fiber.Ctx) error {
 
 	// Return response sukses dengan portofolio ID
 	return c.JSON(fiber.Map{
-		"message": "Portofolio created successfully",
+		"message":       "Portofolio created successfully",
 		"portofolio_id": portofolioID,
 	})
 }

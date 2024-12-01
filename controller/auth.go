@@ -1,14 +1,15 @@
 package controller
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"KSI-BE/repos"
 	"KSI-BE/model"
-	"golang.org/x/crypto/bcrypt"
-	"github.com/dgrijalva/jwt-go"
+	"KSI-BE/repos"
+	"log"
 	"os"
 	"time"
-	"log"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gofiber/fiber/v2"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func Register(c *fiber.Ctx) error {
@@ -96,6 +97,6 @@ func Login(c *fiber.Ctx) error {
 	// Return response sukses dengan token
 	return c.JSON(fiber.Map{
 		"message": "Login successful",
-		"token": t,
+		"token":   t,
 	})
 }

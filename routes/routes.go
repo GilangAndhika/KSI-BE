@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"KSI-BE/controller"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func Setup(app *fiber.App) {

@@ -4,13 +4,14 @@ import (
 	"context"
 	"log"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"KSI-BE/config"
 	"KSI-BE/model"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func GetAllProfile() ([]map[string]interface{}, error) {
-	collection := config.GetMongoClient().Database("ksi").Collection("user")
+	collection := config.GetMongoClient().Database("KSI").Collection("user")
 	cursor, err := collection.Find(context.Background(), bson.M{})
 	if err != nil {
 		log.Println("Error fetching profiles:", err)

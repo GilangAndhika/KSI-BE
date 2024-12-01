@@ -11,7 +11,7 @@ import (
 )
 
 func GetPermissionsByRole(role string) ([]model.ACL, error) {
-	collection := config.GetMongoClient().Database("ksi").Collection("acl")
+	collection := config.GetMongoClient().Database("KSI").Collection("acl")
 	cursor, err := collection.Find(context.Background(), bson.M{"role": role})
 	if err != nil {
 		return nil, err

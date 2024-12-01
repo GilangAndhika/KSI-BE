@@ -1,8 +1,9 @@
 package controller
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"KSI-BE/repos"
+
+	"github.com/gofiber/fiber/v2"
 	// "KSI-BE/model"
 )
 

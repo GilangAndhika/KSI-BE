@@ -125,9 +125,19 @@ func Login(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).SendString("Error signing token")
 	}
 
-	// Return response sukses dengan token
+	// Set token in cookies
+	c.Cookie(&fiber.Cookie{
+		Name:     "jwt",         // Nama cookie
+		Value:    t,             // Nilai cookie (JWT)
+		Expires:  time.Now().Add(24 * time.Hour), // Masa berlaku cookie
+		HTTPOnly: true,          // Akses hanya melalui HTTP (tidak dapat diakses oleh JS)
+		Secure:   false,         // Gunakan HTTPS jika true, gunakan false untuk localhost
+		SameSite: "Lax",         // Aturan SameSite untuk cookie
+	})
+
+	// Return response sukses
 	return c.JSON(fiber.Map{
 		"message": "Login successful",
-		"token":   t,
 	})
+
 }

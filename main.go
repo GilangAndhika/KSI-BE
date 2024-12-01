@@ -18,7 +18,7 @@ func main() {
 
 	// Use CORS middleware with default settings
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*",  // Allow all origins
+		AllowOrigins: "http://127.0.0.1:5500/",  // Allow all origins
 		AllowMethods: "GET,POST,PUT,DELETE",  // Allow methods
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",  // Allow headers
 	}))

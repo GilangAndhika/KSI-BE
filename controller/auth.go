@@ -11,39 +11,6 @@ import (
 	"log"
 )
 
-func Login(c *fiber.Ctx) error {
-	var input model.User
-	if err := c.BodyParser(&input); err != nil {
-		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
-	}
-
-	user, err := repos.GetUserByUsername(input.Username)
-	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).SendString("Invalid username or password")
-	}
-
-	// Compare password
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
-	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).SendString("Invalid username or password")
-	}
-
-	// Create JWT token
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": user.ID,
-		"role": user.Role,
-		"exp": time.Now().Add(time.Hour * 24).Unix(),
-	})
-	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString("Could not create token")
-	}
-
-	return c.JSON(fiber.Map{
-		"token": tokenString,
-	})
-}
-
 func Register(c *fiber.Ctx) error {
 	var input model.User
 
@@ -83,5 +50,52 @@ func Register(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"message": "User registered successfully",
 		"user_id": userID,
+	})
+}
+
+func Login(c *fiber.Ctx) error {
+	var input model.User
+
+	// Parse body request untuk mendapatkan data
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+	}
+
+	// Validasi username dan password
+	if input.Username == "" || input.Password == "" {
+		return c.Status(fiber.StatusBadRequest).SendString("Username and password are required")
+	}
+
+	// Ambil data user berdasarkan username
+	user, err := repos.GetUserByUsername(input.Username)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Error fetching user")
+	}
+	if user == nil {
+		return c.Status(fiber.StatusNotFound).SendString("User not found")
+	}
+
+	// Validasi password
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).SendString("Invalid password")
+	}
+
+	// Generate token
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["user_id"] = user.ID
+	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+
+	// Sign token
+	t, err := token.SignedString([]byte(os.Getenv("LOGIN")))
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Error signing token")
+	}
+
+	// Return response sukses dengan token
+	return c.JSON(fiber.Map{
+		"message": "Login successful",
+		"token": t,
 	})
 }

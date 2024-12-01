@@ -68,3 +68,32 @@ func GetUserByID(id string) (*model.User, error) {
 	}
 	return &user, nil
 }
+
+func GetAllUser() ([]model.User, error) {
+	collection := config.GetMongoClient().Database("KSI").Collection("users")
+	cursor, err := collection.Find(context.Background(), bson.M{})
+	if err != nil {
+		log.Println("Error fetching users:", err)
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	var users []model.User
+	for cursor.Next(context.Background()) {
+		var user model.User
+		err := cursor.Decode(&user)
+		if err != nil {
+			log.Println("Error decoding user:", err)
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	if err := cursor.Err(); err != nil {
+		log.Println("Cursor error:", err)
+		return nil, err
+	}
+
+	return users, nil
+}

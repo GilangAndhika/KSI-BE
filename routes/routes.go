@@ -14,4 +14,6 @@ func Setup(app *fiber.App) {
 	app.Post("/portofolio", controller.CreatePortofolio)
 
 	app.Post("/orders", controller.CreateOrder)
+
+	app.Get("/profile", controller.GetAllProfile)
 }

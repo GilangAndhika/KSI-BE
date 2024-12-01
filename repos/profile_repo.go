@@ -8,6 +8,7 @@ import (
 	"KSI-BE/model"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func GetAllProfile() ([]map[string]interface{}, error) {
@@ -46,4 +47,29 @@ func GetAllProfile() ([]map[string]interface{}, error) {
 	}
 
 	return profiles, nil
+}
+
+func GetProfileByID(id string) (map[string]interface{}, error) {
+	collection := config.GetMongoClient().Database("KSI").Collection("users")
+	var user model.User
+
+	err := collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			// If there is no user with this ID, return nil
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	// Exclude the Password field and construct a map
+	profile := map[string]interface{}{
+		"id":       user.ID,
+		"username": user.Username,
+		"email":    user.Email,
+		"phone":    user.Phone,
+		"role":     user.Role,
+	}
+
+	return profile, nil
 }

@@ -25,3 +25,12 @@ func GetAllProfile(c *fiber.Ctx) error {
 		"profiles": profiles,
 	})
 }
+
+func GetProfileByID(c *fiber.Ctx) error {
+	id := c.Params("id")
+	profile, err := repos.GetProfileByID(id)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).SendString("Profile not found")
+	}
+	return c.JSON(profile)
+}

@@ -52,3 +52,18 @@ func CreateUser(user *model.User) (string, error) {
 	id := result.InsertedID
 	return id.(string), nil
 }
+
+func GetUserByID(id string) (*model.User, error) {
+	collection := config.GetMongoClient().Database("ksi").Collection("users")
+	var user model.User
+
+	err := collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			// Jika tidak ada user dengan ID ini, return nil
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
+}

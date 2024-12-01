@@ -12,6 +12,20 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var secretKey = []byte("Auth") // Gunakan secret key yang aman
+
+// GenerateJWT membuat token JWT
+func GenerateJWT(user *model.User) (string, error) {
+	claims := jwt.MapClaims{
+		"sub":    user.ID,  // Menyimpan ID pengguna dalam token
+		"exp":    time.Now().Add(time.Hour * 24).Unix(), // Token berlaku selama 24 jam
+		"role":   user.Role,
+		"email":  user.Email,
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(secretKey)
+}
+
 func Register(c *fiber.Ctx) error {
 	var input model.User
 
@@ -47,12 +61,29 @@ func Register(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).SendString("Error creating user")
 	}
 
+	// Generate JWT token
+	token, err := GenerateJWT(&input)
+	if err != nil {
+		log.Println("Error generating JWT:", err)
+		return c.Status(fiber.StatusInternalServerError).SendString("Error generating JWT")
+	}
+
+	// Set token JWT ke dalam cookie
+	c.Cookie(&fiber.Cookie{
+		Name:     "token",
+		Value:    token,
+		Expires:  time.Now().Add(time.Hour * 24), // Set cookie expired dalam 24 jam
+		HTTPOnly: true, // Hanya bisa diakses oleh server, tidak di JavaScript
+		Secure:   false, // Hanya kirim cookie melalui HTTPS (set ke false jika tidak menggunakan HTTPS)
+	})
+
 	// Return response sukses dengan user ID
 	return c.JSON(fiber.Map{
 		"message": "User registered successfully",
 		"user_id": userID,
 	})
 }
+
 
 func Login(c *fiber.Ctx) error {
 	var input model.User

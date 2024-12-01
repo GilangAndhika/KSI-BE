@@ -16,6 +16,12 @@ func CreateOrder(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString("Invalid request body: " + err.Error())
 	}
 
+	// Ambil token dari header
+	token := c.Get("Auth")
+	if token == "" {
+		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
+	}
+
 	// Validasi user_id
 	if input.UserID == "" {
 		return c.Status(fiber.StatusBadRequest).SendString("User ID is required")

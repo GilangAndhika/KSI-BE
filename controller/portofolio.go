@@ -14,6 +14,12 @@ func CreatePortofolio(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
 	}
 
+	// Ambil token dari header
+	token := c.Get("Auth")
+	if token == "" {
+		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
+	}
+
 	// Simpan data portofolio ke database
 	portofolioID, err := repos.CreatePortofolio(&input)
 	if err != nil {

@@ -35,7 +35,7 @@ func CreateUser(user *model.User) (string, error) {
 		return "", err
 	}
 	if existingUser != nil {
-		return "", fmt.Errorf("Username '%s' already exists", user.Username)
+		return "", fmt.Errorf("username '%s' already exists", user.Username)
 	}
 
 	// Generate ID untuk user baru jika menggunakan UUID

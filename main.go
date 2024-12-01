@@ -3,11 +3,10 @@ package main
 import (
 	"log"
 
-	"KSI-BE/config"
-	"KSI-BE/routes"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"KSI-BE/config"
+	"KSI-BE/routes"
 )
 
 func main() {
@@ -19,9 +18,10 @@ func main() {
 
 	// Use CORS middleware with default settings
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*",                                           // Allow all origins
-		AllowMethods: "GET,POST,PUT,DELETE",                         // Allow methods
-		AllowHeaders: "Origin, Content-Type, Accept, Authorization", // Allow headers
+		AllowOrigins: "http://127.0.0.1:5500",  // Allow all origins
+		AllowMethods: "GET,POST,PUT,DELETE",  // Allow methods
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization, Auth",  // Allow headers
+		AllowCredentials: true,
 	}))
 
 	// Set up routes

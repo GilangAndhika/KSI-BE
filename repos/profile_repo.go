@@ -11,7 +11,7 @@ import (
 )
 
 func GetAllProfile() ([]map[string]interface{}, error) {
-	collection := config.GetMongoClient().Database("KSI").Collection("user")
+	collection := config.GetMongoClient().Database("KSI").Collection("users")
 	cursor, err := collection.Find(context.Background(), bson.M{})
 	if err != nil {
 		log.Println("Error fetching profiles:", err)

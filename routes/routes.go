@@ -13,12 +13,9 @@ func Setup(app *fiber.App) {
 	app.Post("/register", controller.Register)
 
 	app.Post("/portofolio", controller.CreatePortofolio)
+	app.Get("/portofolios", controller.GetAllPortofolio)
 
 	app.Post("/orders", controller.CreateOrder)
 
 	app.Get("/profile", controller.GetAllProfile)
-
-	app.Post("/user", controller.CreateUser)
-
-	app.Get("/users", controller.GetAllUser)
 }

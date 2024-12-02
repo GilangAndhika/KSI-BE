@@ -97,3 +97,61 @@ func GetAllUser() ([]model.User, error) {
 
 	return users, nil
 }
+
+func UpdateUser(id string, user *model.User) (string, error) {
+	collection := config.GetMongoClient().Database("KSI").Collection("users")
+
+	// Cek apakah user sudah ada
+	existingUser, err := GetUserByID(id)
+	if err != nil {
+		log.Println("Error checking user:", err)
+		return "", err
+	}
+	if existingUser == nil {
+		return "", fmt.Errorf("user with ID '%s' does not exist", id)
+	}
+
+	// Hapus _id dari struct user untuk mencegah pengubahan _id
+	updateData := bson.M{
+		"username": user.Username,
+		"email":    user.Email,
+		"phone":    user.Phone,
+		"role":     user.Role,
+	}
+
+	// Update user di MongoDB
+	filter := bson.M{"_id": id}
+	update := bson.M{"$set": updateData}
+
+	_, err = collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		log.Println("Error updating user:", err)
+		return "", err
+	}
+
+	return id, nil
+}
+
+
+func DeleteUser(id string) error {
+	collection := config.GetMongoClient().Database("KSI").Collection("users")
+
+	// Cek apakah user sudah ada
+	existingUser, err := GetUserByID(id)
+	if err != nil {
+		log.Println("Error checking user:", err)
+		return err
+	}
+	if existingUser == nil {
+		return fmt.Errorf("user with ID '%s' does not exist", id)
+	}
+
+	// Hapus user dari MongoDB
+	_, err = collection.DeleteOne(context.Background(), bson.M{"_id": id})
+	if err != nil {
+		log.Println("Error deleting user:", err)
+		return err
+	}
+
+	return nil
+}

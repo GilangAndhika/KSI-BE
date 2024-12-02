@@ -51,3 +51,31 @@ func GetAllUser(c *fiber.Ctx) error {
 	}
 	return c.JSON(users)
 }
+
+func UpdateUser(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var user model.User
+
+	if err := c.BodyParser(&user); err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+	}
+
+	userID, err := repos.UpdateUser(id, &user)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Error updating user")
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "User updated successfully",
+		"user_id": userID,
+	})
+}
+
+func DeleteUser(c *fiber.Ctx) error {
+	id := c.Params("id")
+	err := repos.DeleteUser(id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Error deleting user")
+	}
+	return c.SendString("User deleted successfully")
+}

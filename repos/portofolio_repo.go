@@ -57,7 +57,7 @@ func GetPortofolioByID(id string) (*model.Portofolio, error) {
 	return &portofolio, nil
 }
 
-func GetAllPortofolio() ([]model.Portofolio, error) {
+func GetAllPortofolio() ([]map[string]interface{}, error) {
 	collection := config.GetMongoClient().Database("KSI").Collection("portofolio")
 	cursor, err := collection.Find(context.Background(), bson.M{})
 	if err != nil {
@@ -66,7 +66,7 @@ func GetAllPortofolio() ([]model.Portofolio, error) {
 	}
 	defer cursor.Close(context.Background())
 
-	var portofolios []model.Portofolio
+	var portofolios []map[string]interface{}
 	for cursor.Next(context.Background()) {
 		var portofolio model.Portofolio
 		err := cursor.Decode(&portofolio)
@@ -74,7 +74,23 @@ func GetAllPortofolio() ([]model.Portofolio, error) {
 			log.Println("Error decoding portofolio:", err)
 			return nil, err
 		}
-		portofolios = append(portofolios, portofolio)
+
+		// Exclude the Password field and construct a map
+		portofolioMap := map[string]interface{}{
+			"id":          portofolio.ID,
+			"title":       portofolio.DesignTitle,
+			"description": portofolio.DesignDescription,
+			"image":       portofolio.DesignImage,
+			"type":        portofolio.DesignType,
+		}
+
+		portofolios = append(portofolios, portofolioMap)
 	}
+
+	if err := cursor.Err(); err != nil {
+		log.Println("Cursor error:", err)
+		return nil, err
+	}
+
 	return portofolios, nil
 }

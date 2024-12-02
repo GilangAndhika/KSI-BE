@@ -1,5 +1,7 @@
 package controller
 
+import "fmt"
+
 import (
 	"KSI-BE/model"
 	"KSI-BE/repos"
@@ -11,20 +13,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 )
-
-var secretKey = []byte("Auth") // Gunakan secret key yang aman
-
-// GenerateJWT membuat token JWT
-func GenerateJWT(user *model.User) (string, error) {
-	claims := jwt.MapClaims{
-		"sub":    user.ID,  // Menyimpan ID pengguna dalam token
-		"exp":    time.Now().Add(time.Hour * 24).Unix(), // Token berlaku selama 24 jam
-		"role":   user.Role,
-		"email":  user.Email,
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(secretKey)
-}
 
 func Register(c *fiber.Ctx) error {
 	var input model.User
@@ -60,22 +48,6 @@ func Register(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Error creating user")
 	}
-
-	// Generate JWT token
-	token, err := GenerateJWT(&input)
-	if err != nil {
-		log.Println("Error generating JWT:", err)
-		return c.Status(fiber.StatusInternalServerError).SendString("Error generating JWT")
-	}
-
-	// Set token JWT ke dalam cookie
-	c.Cookie(&fiber.Cookie{
-		Name:     "token",
-		Value:    token,
-		Expires:  time.Now().Add(time.Hour * 24), // Set cookie expired dalam 24 jam
-		HTTPOnly: true, // Hanya bisa diakses oleh server, tidak di JavaScript
-		Secure:   false, // Hanya kirim cookie melalui HTTPS (set ke false jika tidak menggunakan HTTPS)
-	})
 
 	// Return response sukses dengan user ID
 	return c.JSON(fiber.Map{
@@ -130,7 +102,30 @@ func Login(c *fiber.Ctx) error {
 		Name:     "Auth",         // Nama cookie
 		Value:    t,             // Nilai cookie (JWT)
 		Expires:  time.Now().Add(24 * time.Hour), // Masa berlaku cookie
-		HTTPOnly: true,          // Akses hanya melalui HTTP (tidak dapat diakses oleh JS)
+		HTTPOnly: false,          // Akses hanya melalui HTTP (tidak dapat diakses oleh JS)
+		Secure:   false,         // Gunakan HTTPS jika true, gunakan false untuk localhost
+		SameSite: "Lax",         // Aturan SameSite untuk cookie
+	})
+
+	// Set token in header
+	c.Set("Auth", t)
+
+	// Set id user in cookies
+	c.Cookie(&fiber.Cookie{
+		Name:     "ID",         // Nama cookie
+		Value:    user.ID,             // Nilai cookie (JWT)
+		Expires:  time.Now().Add(24 * time.Hour), // Masa berlaku cookie
+		HTTPOnly: false,          // Akses hanya melalui HTTP (tidak dapat diakses oleh JS)
+		Secure:   false,         // Gunakan HTTPS jika true, gunakan false untuk localhost
+		SameSite: "Lax",         // Aturan SameSite untuk cookie
+	})
+
+	// Set role in cookies
+	c.Cookie(&fiber.Cookie{
+		Name:     "Role",         // Nama cookie
+		Value:    fmt.Sprint(user.Role),             // Nilai cookie (JWT)
+		Expires:  time.Now().Add(24 * time.Hour), // Masa berlaku cookie
+		HTTPOnly: false,          // Akses hanya melalui HTTP (tidak dapat diakses oleh JS)
 		Secure:   false,         // Gunakan HTTPS jika true, gunakan false untuk localhost
 		SameSite: "Lax",         // Aturan SameSite untuk cookie
 	})

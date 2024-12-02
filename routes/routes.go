@@ -18,7 +18,6 @@ func Setup(app *fiber.App) {
 	app.Post("/orders", controller.CreateOrder)
 
 	app.Get("/profile", controller.GetAllProfile)
-<<<<<<< HEAD
 	app.Get("/profile/:id", controller.GetProfileByID)
 	
 	app.Get("/users", controller.GetAllUser)
@@ -26,6 +25,4 @@ func Setup(app *fiber.App) {
 	app.Post("/user", controller.CreateUser)
 	app.Put("/user/:id", controller.UpdateUser)
 	app.Delete("/user/:id", controller.DeleteUser)
-=======
->>>>>>> 503a0f8f116eded3b4f850fedfa38474b9328a90
 }
